@@ -9,19 +9,23 @@
 int distance() {
     int time_taken;
     int distance;
-    TMR1H =0; TMR1L =0; //clear the timer bits
+    TMR1H =0; TMR1L =0; // clear timer1 bits
         
+    // Để kết nối với SRF04 thì chân trig sẽ phát 1 xung ngắn khoảng 10us
         Trigger = 1; 
         __delay_us(10);           
         Trigger = 0;  
         
-        while (Echo==0);
-            TMR1ON = 1;
-        while (Echo==1);
-            TMR1ON = 0;
+    // SRF04 tạo một xung HIGH cho đến khi nhận tín hiệu phản hồi mà nó phát ra
+        while (Echo==0); // đợi chân echo lên HIGH
+            TMR1ON = 1; // khi lên HIGH bắt đầu tính thời gian
+        while (Echo==1); 
+            TMR1ON = 0; // Khi nhận được tín hiệu phản hồi thì echo xuống LOW và kết thúc tính giờ 
         
+    
+    // Tính khoảng cách bằng thời gian vừa đo theo công thức
         time_taken = (TMR1L | (TMR1H<<8)); 
-        distance= (0.0272*time_taken)/2;
+        distance= (0.0272*time_taken)/2; 
             
         time_taken = time_taken * 0.8;
         return distance + 1;
